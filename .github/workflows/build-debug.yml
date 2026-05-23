@@ -24,6 +24,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Create local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
