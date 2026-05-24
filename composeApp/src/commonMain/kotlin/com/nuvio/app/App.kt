@@ -1787,7 +1787,22 @@ private fun MainAppContent(
                             }
                             return
                         }
-                        val sourceUrl = stream.playableDirectUrl ?: return
+                        val sourceUrl = stream.playableDirectUrl ?: run {
+    if (stream.isTorrentStream) {
+        val magnet = stream.torrentMagnetUri
+            ?: stream.infoHash?.let { "magnet:?xt=urn:btih:$it" }
+        if (magnet != null) {
+            ExternalPlayerPlatform.open(
+                request = ExternalPlayerPlaybackRequest(
+                    sourceUrl = magnet,
+                    title = stream.streamLabel,
+                ),
+                playerId = null,
+            )
+        }
+    }
+    return
+                        }
                         if (playerSettings.streamReuseLastLinkEnabled) {
                             val cacheKey = StreamLinkCacheRepository.contentKey(
                                 type = launch.type,
