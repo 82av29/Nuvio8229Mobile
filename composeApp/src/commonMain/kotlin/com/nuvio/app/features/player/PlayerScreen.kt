@@ -893,7 +893,13 @@ fun PlayerScreen(
             return true
         }
 
-        fun switchToSource(stream: StreamItem) {
+        fun switchToEpisodeStream(stream: StreamItem, episode: MetaVideo) {
+            if (stream.isTorrentStream && stream.playableDirectUrl == null) {
+                val magnet = stream.torrentMagnetUri
+                    ?: stream.infoHash?.let { "magnet:?xt=urn:btih:$it" }
+                if (magnet != null) uriHandler.openUri(magnet)
+                return
+            }
             if (
                 resolveDebridForPlayer(
                     stream = stream,
@@ -963,6 +969,12 @@ fun PlayerScreen(
         }
 
         fun switchToEpisodeStream(stream: StreamItem, episode: MetaVideo) {
+            if (stream.isTorrentStream && stream.playableDirectUrl == null) {
+                val magnet = stream.torrentMagnetUri
+                    ?: stream.infoHash?.let { "magnet:?xt=urn:btih:$it" }
+                if (magnet != null) uriHandler.openUri(magnet)
+                return
+            }
             if (
                 resolveDebridForPlayer(
                     stream = stream,
