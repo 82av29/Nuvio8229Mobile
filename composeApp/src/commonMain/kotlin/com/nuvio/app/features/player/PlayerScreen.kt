@@ -84,6 +84,7 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlin.math.roundToInt
+import androidx.compose.ui.platform.LocalUriHandler
 
 private const val PlaybackProgressPersistIntervalMs = 60_000L
 private const val PlayerDoubleTapSeekStepMs = 10_000L
@@ -156,6 +157,7 @@ fun PlayerScreen(
     initialPositionMs: Long = 0L,
     initialProgressFraction: Float? = null,
 ) {
+	val uriHandler = LocalUriHandler.current
     LockPlayerToLandscape()
     val playerSettingsUiState by remember {
         PlayerSettingsRepository.ensureLoaded()
@@ -913,7 +915,13 @@ fun PlayerScreen(
                     },
                 )
             ) return
-            val url = stream.playableDirectUrl ?: return
+            val url = stream.playableDirectUrl ?: run {
+                if (stream.isTorrentStream) {
+                    val magnet = stream.torrentMagnetUri
+                    if (magnet != null) uriHandler.openUri(magnet)
+                }
+                return
+			}
             if (url == activeSourceUrl) return
             val currentPositionMs = playbackSnapshot.positionMs.coerceAtLeast(0L)
             flushWatchProgress()
@@ -974,7 +982,13 @@ fun PlayerScreen(
                     },
                 )
             ) return
-            val url = stream.playableDirectUrl ?: return
+            val url = stream.playableDirectUrl ?: run {
+                if (stream.isTorrentStream) {
+                    val magnet = stream.torrentMagnetUri
+                    if (magnet != null) uriHandler.openUri(magnet)
+                }
+                return
+			}
             showNextEpisodeCard = false
             showSourcesPanel = false
             showEpisodesPanel = false
