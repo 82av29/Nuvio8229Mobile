@@ -918,6 +918,7 @@ fun PlayerScreen(
             val url = stream.playableDirectUrl ?: run {
                 if (stream.isTorrentStream) {
                     val magnet = stream.torrentMagnetUri
+					    ?: stream.infoHash?.let { "magnet:?xt=urn:btih:$it" }
                     if (magnet != null) uriHandler.openUri(magnet)
                 }
                 return
@@ -985,6 +986,7 @@ fun PlayerScreen(
             val url = stream.playableDirectUrl ?: run {
                 if (stream.isTorrentStream) {
                     val magnet = stream.torrentMagnetUri
+					    ?: stream.infoHash?.let { "magnet:?xt=urn:btih:$it" }
                     if (magnet != null) uriHandler.openUri(magnet)
                 }
                 return
